@@ -5,6 +5,14 @@
     <link rel="icon" type="image/png" href="/logo_index.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>EFF</title>
+    <script>
+      (function() {
+        var redirect = new URLSearchParams(window.location.search).get('redirect');
+        if (redirect) {
+          window.history.replaceState(null, null, redirect);
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="app"></div>
