@@ -47,28 +47,32 @@
                 @mouseenter="openMenu(item.label)"
                 @mouseleave="closeMenu"
               >
-                <div class="max-w-7xl mx-auto px-8 py-8">
-                  <!-- Wrap every 3 cols into a row -->
-                  <div class="flex flex-col gap-8">
-                    <div
-                      v-for="(row, ri) in chunk(item.dropdown, 3)"
-                      :key="ri"
-                      class="grid grid-cols-3 gap-10"
-                    >
-                      <div v-for="col in row" :key="col.title">
-                        <h3 class="font-bold text-gray-900 text-base mb-4">{{ col.title }}</h3>
-                        <ul class="flex flex-col gap-3">
-                          <li v-for="sub in col.items" :key="sub.label">
-                            <RouterLink
-                              :to="sub.to"
-                              class="text-sm text-gray-600 hover:text-[#4a7c2f] transition-colors"
-                              @click="activeMenu = null"
-                            >
-                              {{ sub.label }}
-                            </RouterLink>
-                          </li>
-                        </ul>
-                      </div>
+                <div class="py-14 px-12">
+                  <div
+                    class="mx-auto grid gap-x-28 gap-y-10"
+                    :style="`
+                      grid-template-columns: repeat(${item.chunkSize || 3}, minmax(200px, auto));
+                      width: fit-content;
+                    `"
+                  >
+                    <div v-for="(col, ci) in item.dropdown" :key="col.title || ci">
+                      <h3 v-if="col.title" class="font-bold text-gray-900 text-lg mb-5">
+                        <RouterLink v-if="col.to" :to="col.to" class="hover:text-[#4a7c2f] transition-colors" @click="activeMenu = null">{{ col.title }}</RouterLink>
+                        <span v-else>{{ col.title }}</span>
+                      </h3>
+                      <ul :class="col.title ? 'flex flex-col gap-3' : 'flex flex-col gap-5'">
+                        <li v-for="sub in col.items" :key="sub.label">
+                          <RouterLink
+                            :to="sub.to"
+                            :class="col.title
+                              ? 'text-sm text-gray-600 hover:text-[#4a7c2f] transition-colors'
+                              : 'text-base font-bold text-gray-800 hover:text-[#4a7c2f] transition-colors'"
+                            @click="activeMenu = null"
+                          >
+                            {{ sub.label }}
+                          </RouterLink>
+                        </li>
+                      </ul>
                     </div>
                   </div>
                 </div>
@@ -78,13 +82,15 @@
         </nav>
 
         <!-- Desktop Search -->
-        <div class="hidden lg:flex items-center flex-shrink-0 overflow-hidden">
+        <div class="hidden lg:flex items-center flex-shrink-0 relative">
           <input
             v-model="searchQuery"
             type="text"
             placeholder="Any enter a part#"
             class="px-3 py-2 bg-gray-100 border border-gray-300 text-sm text-gray-700 placeholder-gray-400 outline-none w-48 border-r-0"
             @keyup.enter="handleSearch"
+            @focus="showSuggestions = true"
+            @blur="hideSuggestions"
           />
           <button
             class="px-5 py-2 bg-[#8dc63f] hover:bg-[#7ab530] text-white text-sm font-semibold transition-colors duration-150 border border-[#8dc63f]"
@@ -92,6 +98,20 @@
           >
             Search
           </button>
+          <ul
+            v-if="showSuggestions && suggestions.length"
+            class="absolute top-full left-0 bg-white border border-gray-200 shadow-lg z-[60] w-64 max-h-60 overflow-y-auto"
+          >
+            <li
+              v-for="p in suggestions"
+              :key="p.id"
+              class="flex items-center justify-between px-4 py-2.5 cursor-pointer hover:bg-gray-50 border-b border-gray-100 last:border-0"
+              @mousedown.prevent="selectSuggestion(p)"
+            >
+              <span class="text-sm font-semibold text-gray-800">{{ p.name }}</span>
+              <span class="text-xs text-gray-400 ml-2">{{ p.category }}</span>
+            </li>
+          </ul>
         </div>
 
         <!-- Mobile: right side -->
@@ -114,7 +134,7 @@
       </div>
 
       <!-- Mobile Search Bar -->
-      <div v-if="searchOpen" class="lg:hidden pb-3">
+      <div v-if="searchOpen" class="lg:hidden pb-3 relative">
         <div class="flex border border-gray-300 rounded overflow-hidden">
           <input
             v-model="searchQuery"
@@ -122,6 +142,8 @@
             placeholder="Any enter a part#"
             class="flex-1 px-3 py-2 bg-gray-100 text-sm text-gray-700 placeholder-gray-400 outline-none"
             @keyup.enter="handleSearch"
+            @focus="showSuggestions = true"
+            @blur="hideSuggestions"
           />
           <button
             class="px-4 py-2 bg-[#8dc63f] hover:bg-[#7ab530] text-white text-sm font-semibold transition-colors"
@@ -130,6 +152,20 @@
             Search
           </button>
         </div>
+        <ul
+          v-if="showSuggestions && suggestions.length"
+          class="absolute left-0 right-0 bg-white border border-gray-200 shadow-lg z-[60] max-h-60 overflow-y-auto"
+        >
+          <li
+            v-for="p in suggestions"
+            :key="p.id"
+            class="flex items-center justify-between px-4 py-2.5 cursor-pointer hover:bg-gray-50 border-b border-gray-100 last:border-0"
+            @mousedown.prevent="selectSuggestion(p)"
+          >
+            <span class="text-sm font-semibold text-gray-800">{{ p.name }}</span>
+            <span class="text-xs text-gray-400 ml-2">{{ p.category }}</span>
+          </li>
+        </ul>
       </div>
 
       <!-- Mobile Nav Menu -->
@@ -167,13 +203,17 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { allProducts } from '@/data/products'
 
-const menuOpen   = ref(false)
-const searchOpen = ref(false)
-const searchQuery = ref('')
-const activeMenu  = ref(null)
-const headerHeight = ref(80)
+const router = useRouter()
+const menuOpen      = ref(false)
+const searchOpen    = ref(false)
+const searchQuery   = ref('')
+const showSuggestions = ref(false)
+const activeMenu    = ref(null)
+const headerHeight  = ref(80)
 
 onMounted(() => {
   const el = document.querySelector('header')
@@ -228,16 +268,49 @@ const navItems = [
       },
     ],
   },
-  { label: 'Application',  to: '/application' },
+  {
+    label: 'Application', to: '/application',
+    chunkSize: 2,
+    dropdown: [
+      {
+        title: '',
+        items: [
+          { label: 'Industrial Inverter / Motor Drive', to: '/application' },
+          { label: 'UPS',                               to: '/application' },
+          { label: 'Welding Machine',                   to: '/application' },
+          { label: 'Induction Heating',                 to: '/application' },
+        ],
+      },
+      {
+        title: '',
+        items: [
+          { label: 'Power Supply / Power Source',  to: '/application' },
+          { label: 'Battery Management System',    to: '/application' },
+          { label: 'EV Motor Drive',               to: '/application' },
+          { label: 'EV Charging Station',          to: '/application' },
+        ],
+      },
+    ],
+  },
   { label: 'News',         to: '/news' },
   {
     label: 'Support', to: '/support',
+    chunkSize: 2,
     dropdown: [
       { title: 'Contact Us',      items: [] },
       { title: 'Download Center', items: [] },
     ],
   },
-  { label: 'Partnerships', to: '/partnerships' },
+  {
+    label: 'Partnerships', to: '/partnerships',
+    chunkSize: 4,
+    dropdown: [
+      { title: 'MacMic', to: '/partnerships', items: [] },
+      { title: 'Dynex',  to: '/partnerships', items: [] },
+      { title: 'PEM',    to: '/partnerships', items: [] },
+      { title: 'Hitto',  to: '/partnerships', items: [] },
+    ],
+  },
 ]
 
 const chunk = (arr, size) => {
@@ -246,8 +319,27 @@ const chunk = (arr, size) => {
   return result
 }
 
+const suggestions = computed(() => {
+  const q = searchQuery.value.trim().toLowerCase()
+  if (!q) return []
+  return allProducts.filter(p => p.name.toLowerCase().includes(q))
+})
+
+const hideSuggestions = () => {
+  setTimeout(() => { showSuggestions.value = false }, 150)
+}
+
+const selectSuggestion = (product) => {
+  searchQuery.value = product.name
+  showSuggestions.value = false
+  router.push({ path: '/product', query: { q: product.name } })
+}
+
 const handleSearch = () => {
-  // TODO: implement search
+  const q = searchQuery.value.trim()
+  if (!q) return
+  showSuggestions.value = false
+  router.push({ path: '/product', query: { q } })
 }
 </script>
 

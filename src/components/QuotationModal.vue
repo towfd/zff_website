@@ -35,7 +35,7 @@
 
           <!-- Form -->
           <div class="px-8 py-6">
-            <QuotationForm @submitted="onSubmitted" />
+            <QuotationForm :partNumber="partNumber" @submitted="onSubmitted" />
           </div>
 
         </div>
@@ -47,7 +47,7 @@
 <script setup>
 import QuotationForm from './QuotationForm.vue'
 
-defineProps({ modelValue: Boolean })
+defineProps({ modelValue: Boolean, partNumber: { type: String, default: '' } })
 const emit = defineEmits(['update:modelValue'])
 
 const onSubmitted = (data) => {

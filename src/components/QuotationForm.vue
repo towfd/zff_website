@@ -88,8 +88,9 @@
 </template>
 
 <script setup>
-import { reactive } from 'vue'
+import { reactive, watch } from 'vue'
 
+const props = defineProps({ partNumber: { type: String, default: '' } })
 const emit = defineEmits(['submitted'])
 
 const form = reactive({
@@ -97,6 +98,8 @@ const form = reactive({
   city: '', country: '', email: '', phone: '',
   application: '', currentProduct: '', message: '',
 })
+
+watch(() => props.partNumber, (val) => { form.partNumber = val }, { immediate: true })
 
 const handleSubmit = () => {
   emit('submitted', { ...form })

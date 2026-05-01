@@ -117,6 +117,14 @@
           <!-- Active filter tags -->
           <div v-if="hasActiveFilters" class="flex flex-wrap items-center gap-2 mb-5">
             <span class="text-sm text-gray-600 font-medium">Filter Selected :</span>
+            <!-- Search query tag -->
+            <span
+              v-if="searchQuery"
+              class="inline-flex items-center gap-1 px-3 py-1 bg-[#2d5016] text-white text-xs font-semibold rounded"
+            >
+              Part#: {{ route.query.q }}
+              <button @click="clearSearchQuery" class="ml-1 hover:text-gray-200">✕</button>
+            </span>
             <template v-for="group in filterGroups" :key="group.key">
               <span
                 v-for="val in activeFilters[group.key]"
@@ -178,7 +186,7 @@
               <!-- Buttons -->
               <div class="flex flex-col gap-2 flex-shrink-0">
                 <button
-                  @click="showModal = true"
+                  @click="openQuotation(product)"
                   class="px-5 py-2 bg-[#4a7c2f] hover:bg-[#3a6022] text-white text-xs font-bold tracking-wide transition-colors"
                 >
                   QUOTATION
@@ -264,18 +272,28 @@
       </div>
     </section>
 
-    <QuotationModal v-model="showModal" />
+    <QuotationModal v-model="showModal" :partNumber="selectedPartNumber" />
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, computed } from 'vue'
+import { ref, reactive, computed, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import heroImg from '@/assets/product/hero.png'
 import servicesImg from '@/assets/product/services.png'
 import componentImg from '@/assets/product/component.png'
 import QuotationModal from '@/components/QuotationModal.vue'
+import { allProducts } from '@/data/products'
 
+const route = useRoute()
+const router = useRouter()
 const showModal = ref(false)
+const selectedPartNumber = ref('')
+
+const openQuotation = (product) => {
+  selectedPartNumber.value = product.name
+  showModal.value = true
+}
 const pageSize = ref(10)
 
 const features = [
@@ -289,26 +307,6 @@ const CONFIGS   = ['Half-Bridge','Common Anode','Full Bridge','6in1','7in1','3-L
 const CHIPS     = ['Standard','Fast Switching']
 const VOLTAGES  = ['650V','750V','1200V','1700V']
 const HOUSINGS  = ['34mm','45mm','62mm','Econo Dual','Econo Pack2','Econo Pack3','Easy 1B','Easy 2B','Easy 3B','Econo PIM2','Econo PIM3','HPD','Pack4']
-const IC_VALUES = [25,50,75,100,150,200,250,300,400,600]
-
-const allProducts = Array.from({ length: 100 }, (_, i) => {
-  const ic      = IC_VALUES[i % IC_VALUES.length]
-  const config  = CONFIGS[Math.floor(i / 13) % CONFIGS.length]
-  const chip    = CHIPS[i % CHIPS.length]
-  const volt    = VOLTAGES[Math.floor(i / 25) % VOLTAGES.length]
-  const housing = HOUSINGS[i % HOUSINGS.length]
-  const voltCode = { '650V':'065','750V':'075','1200V':'120','1700V':'170' }[volt]
-  const vce     = { '650V':1.65,'750V':1.75,'1200V':2.00,'1700V':2.35 }[volt]
-  const ptot    = ic + 178
-  const rthJC   = +(0.90 - ic / 1500).toFixed(2)
-  return {
-    id: i + 1,
-    name: `EG${ic}W3LT-${voltCode}H`,
-    category: 'IGBT Module',
-    icNom: ic, vceSat: vce, ptot, rthJC,
-    configuration: config, chipType: chip, voltage: volt, housing,
-  }
-})
 
 // ── Filters ────────────────────────────────────────────────
 const countBy = (key) => (val) =>
@@ -341,7 +339,7 @@ const activeFilters = reactive({
 })
 
 const hasActiveFilters = computed(() =>
-  Object.values(activeFilters).some(arr => arr.length > 0)
+  !!searchQuery.value || Object.values(activeFilters).some(arr => arr.length > 0)
 )
 
 // 同群組「未被選取」的選項：套用 filteredProducts（含自己群組 filter）→ 互斥屬性顯示 0
@@ -377,18 +375,29 @@ const removeFilter = (key, val) => {
   currentPage.value = 1
 }
 
+const clearSearchQuery = () => {
+  router.replace({ path: '/product' })
+}
+
 const clearAllFilters = () => {
   Object.keys(activeFilters).forEach(k => activeFilters[k].splice(0))
+  router.replace({ path: '/product' })
   currentPage.value = 1
 }
 
+const searchQuery = computed(() => (route.query.q || '').toLowerCase())
+
 const filteredProducts = computed(() => {
   return allProducts.filter(p => {
-    return Object.entries(activeFilters).every(([key, vals]) =>
+    const matchesSearch = !searchQuery.value || p.name.toLowerCase().includes(searchQuery.value)
+    const matchesFilters = Object.entries(activeFilters).every(([key, vals]) =>
       vals.length === 0 || vals.includes(p[key])
     )
+    return matchesSearch && matchesFilters
   })
 })
+
+watch(() => route.query.q, () => { currentPage.value = 1 })
 
 // ── Pagination ─────────────────────────────────────────────
 const currentPage = ref(1)
