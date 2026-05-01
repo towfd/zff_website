@@ -1,1 +1,0 @@
-import{n as e,r as t,t as n}from"./index-DBPcaF_e.js";import{t as r}from"./_plugin-vue_export-helper-CSBScHBl.js";var i={},a={class:`page`};function o(r,i){return t(),e(`div`,a,[...i[0]||=[n(`h1`,null,`關於我們`,-1),n(`p`,null,`這是關於頁面`,-1)]])}var s=r(i,[[`render`,o]]);export{s as default};
