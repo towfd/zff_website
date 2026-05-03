@@ -65,7 +65,7 @@
                           <RouterLink
                             :to="sub.to"
                             :class="col.title
-                              ? 'text-sm text-gray-600 hover:text-[#4a7c2f] transition-colors'
+                              ? 'text-sm text-gray-600 hover:text-[#2d5016] hover:font-semibold hover:drop-shadow-md transition-colors'
                               : 'text-base font-bold text-gray-800 hover:text-[#4a7c2f] transition-colors'"
                             @click="activeMenu = null"
                           >

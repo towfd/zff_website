@@ -151,19 +151,19 @@
             <div
               v-for="product in pagedProducts"
               :key="product.id"
-              class="bg-white border border-gray-200 flex items-center gap-6 px-6 py-5 hover:shadow-md transition-shadow"
+              class="bg-white border border-gray-200 flex items-center gap-4 sm:gap-6 px-4 sm:px-6 py-4 sm:py-5 hover:shadow-md transition-shadow"
             >
-              <!-- Image -->
-              <div class="flex-shrink-0 w-36 h-28 flex items-center justify-center bg-gray-50 rounded">
+              <!-- Image (hidden on mobile) -->
+              <div class="hidden sm:flex flex-shrink-0 w-36 h-28 items-center justify-center bg-gray-50 rounded">
                 <img :src="componentImg" :alt="product.name" class="w-full h-full object-contain p-2" />
               </div>
 
               <!-- Info -->
               <div class="flex-1 min-w-0">
                 <p class="text-[#4a7c2f] text-xs font-semibold mb-1">{{ product.category }}</p>
-                <h3 class="text-xl font-extrabold text-gray-900 mb-3">{{ product.name }}</h3>
+                <h3 class="text-base sm:text-xl font-extrabold text-gray-900 mb-2 sm:mb-3 leading-tight">{{ product.name }}</h3>
                 <!-- Specs -->
-                <div class="flex gap-6">
+                <div class="flex flex-wrap gap-3 sm:gap-6">
                   <div class="text-center">
                     <p class="text-[10px] text-gray-400 mb-0.5">Ic nom (A)</p>
                     <p class="text-sm font-bold text-gray-800">{{ product.icNom }}</p>
@@ -187,11 +187,11 @@
               <div class="flex flex-col gap-2 flex-shrink-0">
                 <button
                   @click="openQuotation(product)"
-                  class="px-5 py-2 bg-[#4a7c2f] hover:bg-[#3a6022] text-white text-xs font-bold tracking-wide transition-colors"
+                  class="px-3 sm:px-5 py-2 bg-[#4a7c2f] hover:bg-[#3a6022] text-white text-xs font-bold tracking-wide transition-colors whitespace-nowrap"
                 >
                   QUOTATION
                 </button>
-                <button class="px-5 py-2 border border-gray-300 hover:border-[#4a7c2f] text-gray-700 hover:text-[#4a7c2f] text-xs font-bold tracking-wide transition-colors">
+                <button class="px-3 sm:px-5 py-2 border border-gray-300 hover:border-[#4a7c2f] text-gray-700 hover:text-[#4a7c2f] text-xs font-bold tracking-wide transition-colors whitespace-nowrap">
                   DATASHEET
                 </button>
               </div>
