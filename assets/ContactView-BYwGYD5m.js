@@ -1,1 +1,0 @@
-import{c as e,d as t,t as n,w as r}from"./_plugin-vue_export-helper-BiWtNg4L.js";var i={},a={class:`page`};function o(n,i){return r(),t(`div`,a,[...i[0]||=[e(`h1`,null,`聯絡我們`,-1),e(`p`,null,`這是聯絡頁面`,-1)]])}var s=n(i,[[`render`,o]]);export{s as default};

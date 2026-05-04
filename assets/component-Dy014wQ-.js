@@ -1,0 +1,1 @@
+var e=`/zff_website/assets/component-rG1Y-U5n.png`;export{e as t};
