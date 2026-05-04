@@ -268,49 +268,10 @@ const navItems = [
       },
     ],
   },
-  {
-    label: 'Application', to: '/application',
-    chunkSize: 2,
-    dropdown: [
-      {
-        title: '',
-        items: [
-          { label: 'Industrial Inverter / Motor Drive', to: '/application' },
-          { label: 'UPS',                               to: '/application' },
-          { label: 'Welding Machine',                   to: '/application' },
-          { label: 'Induction Heating',                 to: '/application' },
-        ],
-      },
-      {
-        title: '',
-        items: [
-          { label: 'Power Supply / Power Source',  to: '/application' },
-          { label: 'Battery Management System',    to: '/application' },
-          { label: 'EV Motor Drive',               to: '/application' },
-          { label: 'EV Charging Station',          to: '/application' },
-        ],
-      },
-    ],
-  },
+  { label: 'Application', to: '/application' },
   { label: 'News',         to: '/news' },
-  {
-    label: 'Support', to: '/support',
-    chunkSize: 2,
-    dropdown: [
-      { title: 'Contact Us',      items: [] },
-      { title: 'Download Center', items: [] },
-    ],
-  },
-  {
-    label: 'Partnerships', to: '/partnerships',
-    chunkSize: 4,
-    dropdown: [
-      { title: 'MacMic', to: '/partnerships', items: [] },
-      { title: 'Dynex',  to: '/partnerships', items: [] },
-      { title: 'PEM',    to: '/partnerships', items: [] },
-      { title: 'Hitto',  to: '/partnerships', items: [] },
-    ],
-  },
+  { label: 'Support', to: '/support' },
+  { label: 'Partnerships', to: '/partnerships' },
 ]
 
 const chunk = (arr, size) => {

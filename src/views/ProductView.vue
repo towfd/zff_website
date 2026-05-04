@@ -161,7 +161,9 @@
               <!-- Info -->
               <div class="flex-1 min-w-0">
                 <p class="text-[#4a7c2f] text-xs font-semibold mb-1">{{ product.category }}</p>
-                <h3 class="text-base sm:text-xl font-extrabold text-gray-900 mb-2 sm:mb-3 leading-tight">{{ product.name }}</h3>
+                <RouterLink :to="`/product/${product.id}`" class="block hover:text-[#4a7c2f] transition-colors">
+                  <h3 class="text-base sm:text-xl font-extrabold text-gray-900 mb-2 sm:mb-3 leading-tight hover:text-[#4a7c2f]">{{ product.name }}</h3>
+                </RouterLink>
                 <!-- Specs -->
                 <div class="flex flex-wrap gap-3 sm:gap-6">
                   <div class="text-center">
@@ -191,9 +193,12 @@
                 >
                   QUOTATION
                 </button>
-                <button class="px-3 sm:px-5 py-2 border border-gray-300 hover:border-[#4a7c2f] text-gray-700 hover:text-[#4a7c2f] text-xs font-bold tracking-wide transition-colors whitespace-nowrap">
-                  DATASHEET
-                </button>
+                <RouterLink
+                  :to="`/product/${product.id}`"
+                  class="px-3 sm:px-5 py-2 border border-gray-300 hover:border-[#4a7c2f] text-gray-700 hover:text-[#4a7c2f] text-xs font-bold tracking-wide transition-colors whitespace-nowrap text-center"
+                >
+                  DETAILS
+                </RouterLink>
               </div>
             </div>
           </div>
