@@ -71,11 +71,15 @@
 
     <!-- Full-screen Modal -->
     <Transition name="modal">
-      <div v-if="activeApp" class="fixed inset-0 z-[100] bg-white overflow-y-auto">
+      <div v-if="activeApp" class="fixed inset-x-0 bottom-0 top-16 lg:top-20 z-[45] bg-white overflow-y-auto">
 
-        <!-- Sticky top bar -->
+        <!-- Sticky close bar -->
         <div class="sticky top-0 z-10 bg-white/95 backdrop-blur-sm border-b border-gray-100 flex items-center justify-between px-6 py-3">
-          <span class="text-xs font-bold text-[#8dc63f] uppercase tracking-widest">Applications</span>
+          <div class="flex items-center gap-2">
+            <span class="text-xs text-gray-400">Applications</span>
+            <svg class="w-3 h-3 text-gray-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+            <span class="text-xs font-bold text-gray-700">{{ activeApp.title }}</span>
+          </div>
           <button class="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-900 transition-colors" @click="closeModal">
             <span class="hidden sm:inline">Close</span>
             <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -84,17 +88,20 @@
           </button>
         </div>
 
-        <!-- Hero image -->
-        <div class="relative w-full overflow-hidden" style="max-height: 45vh;">
-          <img :src="activeApp.img" :alt="activeApp.title" class="w-full h-full object-cover" style="max-height: 45vh;" />
-          <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-          <div class="absolute bottom-0 left-0 right-0 px-8 sm:px-16 pb-10">
-            <h1 class="text-2xl sm:text-4xl font-extrabold text-white uppercase leading-tight max-w-3xl">{{ activeApp.title }}</h1>
-          </div>
+        <!-- Title section -->
+        <div class="bg-gray-50 border-b border-gray-100 px-6 sm:px-16 py-10 max-w-4xl mx-auto w-full">
+          <p class="text-[#8dc63f] text-xs font-bold uppercase tracking-widest mb-3">Applications</p>
+          <h1 class="text-2xl sm:text-4xl font-extrabold text-gray-900 uppercase leading-tight max-w-3xl">{{ activeApp.title }}</h1>
+          <p class="text-gray-500 text-sm mt-4 max-w-2xl leading-relaxed">{{ activeApp.desc }}</p>
         </div>
 
         <!-- Content -->
-        <div class="max-w-4xl mx-auto px-6 sm:px-8 py-12">
+        <div class="max-w-4xl mx-auto px-6 sm:px-8 py-10">
+
+          <!-- Image -->
+          <div class="w-full overflow-hidden rounded-sm mb-10">
+            <img :src="activeApp.img" :alt="activeApp.title" class="w-full aspect-video object-cover" />
+          </div>
 
           <!-- Description -->
           <div class="space-y-5 text-base text-gray-600 leading-relaxed">

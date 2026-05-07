@@ -127,6 +127,53 @@
         </div>
       </div>
     </section>
+
+    <!-- FAQ -->
+    <section class="bg-gray-50 py-20 px-6 lg:px-8">
+      <div class="max-w-3xl mx-auto">
+        <div class="text-center mb-14">
+          <p class="text-[#8dc63f] text-sm font-semibold mb-3">FAQ</p>
+          <h2 class="text-3xl font-extrabold text-gray-900">Frequently Asked Questions</h2>
+          <p class="text-gray-500 text-sm mt-4 max-w-md mx-auto">
+            Quick answers to the most common questions about our products and services.
+          </p>
+        </div>
+        <div class="flex flex-col gap-3">
+          <div
+            v-for="(faq, i) in faqs"
+            :key="i"
+            class="bg-white border border-gray-100 rounded-sm overflow-hidden shadow-sm"
+          >
+            <button
+              class="w-full flex items-center justify-between px-6 py-5 text-left gap-4 hover:bg-gray-50 transition-colors duration-150"
+              @click="toggleFaq(i)"
+            >
+              <span class="text-sm font-bold text-gray-900 leading-snug">{{ faq.q }}</span>
+              <span class="flex-shrink-0 w-6 h-6 rounded-full bg-[#8dc63f]/10 flex items-center justify-center transition-transform duration-200" :class="openFaq === i ? 'rotate-45' : ''">
+                <svg class="w-3.5 h-3.5 text-[#8dc63f]" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14M5 12h14" />
+                </svg>
+              </span>
+            </button>
+            <Transition name="faq">
+              <div v-if="openFaq === i" class="px-6 pb-6">
+                <div class="w-8 h-0.5 bg-[#8dc63f] mb-4" />
+                <p class="text-sm text-gray-600 leading-relaxed">{{ faq.a }}</p>
+              </div>
+            </Transition>
+          </div>
+        </div>
+
+        <!-- Still have questions CTA -->
+        <div class="mt-12 text-center bg-white border border-gray-100 rounded-sm p-8 shadow-sm">
+          <p class="text-sm font-semibold text-gray-700 mb-2">Still have questions?</p>
+          <p class="text-xs text-gray-400 mb-6">Our technical team is happy to help with any specific enquiries.</p>
+          <a href="#contact" class="inline-block px-6 py-2.5 bg-[#8dc63f] hover:bg-[#7ab530] text-white text-sm font-bold transition-colors duration-150 rounded-full">
+            Contact Us
+          </a>
+        </div>
+      </div>
+    </section>
   </div>
 </template>
 
@@ -168,4 +215,43 @@ const filteredDownloads = computed(() => {
   if (activeDownloadCat.value === 'All') return downloads
   return downloads.filter(d => d.category === activeDownloadCat.value)
 })
+
+const openFaq = ref(null)
+const toggleFaq = (i) => { openFaq.value = openFaq.value === i ? null : i }
+
+const faqs = [
+  {
+    q: 'What types of power semiconductor modules does MacMic offer?',
+    a: 'MacMic offers a comprehensive range including IGBT modules, SiC MOSFET modules, rectifier modules, FRED modules, SCR modules, and discrete devices. Our portfolio covers voltage ratings from 600V to 3300V and current ratings from a few amps up to several hundred amps.',
+  },
+  {
+    q: 'How do I request a quotation for a specific product?',
+    a: 'You can request a quotation directly through the Quotation button on any product page, or by filling out the Contact form on this page. Our sales team will respond within one business day with pricing and lead-time information.',
+  },
+  {
+    q: 'Do you provide samples for evaluation?',
+    a: 'Yes, engineering samples are available for most products in our portfolio. Please submit a quotation request or contact us directly, specifying the product part number and your intended application. Sample requests are evaluated on a case-by-case basis.',
+  },
+  {
+    q: 'What is the typical lead time for orders?',
+    a: 'Standard lead times range from 8 to 16 weeks depending on the product and order volume. Stock items may be available for immediate shipment. Please contact our sales team for the most up-to-date availability information.',
+  },
+  {
+    q: 'Are your products RoHS and AEC-Q101 compliant?',
+    a: 'All standard products in the MacMic portfolio are RoHS compliant. Select SiC MOSFET module series are AEC-Q101 qualified for automotive applications. Compliance documentation is available in the Download Center or upon request.',
+  },
+  {
+    q: 'Can you support custom or non-standard configurations?',
+    a: 'Yes, we work closely with customers on customised solutions including modified packages, special current/voltage ratings, and custom labelling. Please reach out to our engineering team with your requirements and we will assess feasibility.',
+  },
+  {
+    q: 'What technical documentation is available?',
+    a: 'Our Download Center provides datasheets, application notes, gate drive design guides, thermal management guides, and certification documents. If you cannot find the document you need, please contact our technical support team.',
+  },
+]
 </script>
+
+<style scoped>
+.faq-enter-active, .faq-leave-active { transition: opacity 0.15s ease, max-height 0.2s ease; max-height: 200px; overflow: hidden; }
+.faq-enter-from, .faq-leave-to { opacity: 0; max-height: 0; }
+</style>
