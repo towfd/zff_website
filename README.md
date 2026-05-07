@@ -1,6 +1,6 @@
 # EFF - Efficient International Technology Website
 
-企業官方網站，使用 Vue 3 + Vite + Tailwind CSS 建置。
+企業官方網站DEMO使用，使用 Vue 3 + Vite + Tailwind CSS 建置。
 
 ## Tech Stack
 
