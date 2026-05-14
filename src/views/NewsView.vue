@@ -156,7 +156,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onUnmounted } from 'vue'
 import pcimImg     from '@/assets/index/pcim.png'
 import mosfetImg   from '@/assets/index/mosfet.png'
 import powerImg    from '@/assets/index/power.png'
@@ -171,6 +171,7 @@ const activeNews = ref(null)
 
 const openModal  = (item) => { activeNews.value = item; document.body.style.overflow = 'hidden' }
 const closeModal = ()     => { activeNews.value = null;  document.body.style.overflow = '' }
+onUnmounted(() => { document.body.style.overflow = '' })
 
 const igbtProducts = [
   { name: 'EG75W3LT-120H',  category: 'IGBT Module',       spec: '75A / 1200V',  desc: 'Half-bridge IGBT module with fast switching and low VCE(sat) for inverter applications.', img: componentImg, to: '/product/3'  },

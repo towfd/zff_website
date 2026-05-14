@@ -14,8 +14,47 @@
       </div>
     </section>
 
-    <!-- Contact Us -->
-    <section id="contact" class="bg-gray-50 py-20 px-6 lg:px-8 scroll-mt-20">
+    <!-- Tabs -->
+    <div class="w-full">
+      <!-- Tab headers -->
+      <div class="flex border-b border-gray-200 bg-white px-6 lg:px-16">
+        <button
+          @click="activeTab = 'contact'"
+          :class="[
+            'px-6 py-4 text-sm font-bold tracking-wide transition-colors border-b-2 -mb-px',
+            activeTab === 'contact'
+              ? 'border-[#8dc63f] text-[#8dc63f]'
+              : 'border-transparent text-gray-500 hover:text-gray-800'
+          ]"
+        >
+          Contact Us
+        </button>
+        <button
+          @click="activeTab = 'downloads'"
+          :class="[
+            'px-6 py-4 text-sm font-bold tracking-wide transition-colors border-b-2 -mb-px',
+            activeTab === 'downloads'
+              ? 'border-[#8dc63f] text-[#8dc63f]'
+              : 'border-transparent text-gray-500 hover:text-gray-800'
+          ]"
+        >
+          Download Center
+        </button>
+        <button
+          @click="activeTab = 'faq'"
+          :class="[
+            'px-6 py-4 text-sm font-bold tracking-wide transition-colors border-b-2 -mb-px',
+            activeTab === 'faq'
+              ? 'border-[#8dc63f] text-[#8dc63f]'
+              : 'border-transparent text-gray-500 hover:text-gray-800'
+          ]"
+        >
+          FAQ
+        </button>
+      </div>
+
+      <!-- Tab: Contact Us -->
+      <section v-show="activeTab === 'contact'" id="contact" class="bg-gray-50 py-20 px-6 lg:px-8 scroll-mt-20">
       <div class="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16">
         <div>
           <p class="text-[#8dc63f] text-sm font-semibold mb-3">Get In Touch</p>
@@ -82,8 +121,8 @@
       </div>
     </section>
 
-    <!-- Download Center -->
-    <section id="download-center" class="bg-white py-20 px-6 lg:px-8 scroll-mt-20">
+      <!-- Tab: Download Center -->
+      <section v-show="activeTab === 'downloads'" id="download-center" class="bg-white py-20 px-6 lg:px-8 scroll-mt-20">
       <div class="max-w-7xl mx-auto">
         <div class="text-center mb-14">
           <p class="text-[#8dc63f] text-sm font-semibold mb-3">Resources</p>
@@ -128,8 +167,8 @@
       </div>
     </section>
 
-    <!-- FAQ -->
-    <section class="bg-gray-50 py-20 px-6 lg:px-8">
+      <!-- Tab: FAQ -->
+      <section v-show="activeTab === 'faq'" class="bg-gray-50 py-20 px-6 lg:px-8">
       <div class="max-w-3xl mx-auto">
         <div class="text-center mb-14">
           <p class="text-[#8dc63f] text-sm font-semibold mb-3">FAQ</p>
@@ -173,12 +212,16 @@
           </a>
         </div>
       </div>
-    </section>
+      </section>
+
+    </div><!-- end tabs -->
   </div>
 </template>
 
 <script setup>
 import { ref, computed } from 'vue'
+
+const activeTab = ref('contact')
 
 const contactInfo = [
   { label: 'Phone',   value: '+886-2-1234-5678',        icon: 'M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z' },

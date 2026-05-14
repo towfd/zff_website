@@ -31,8 +31,36 @@
       </p>
     </section>
 
-    <!-- Services section -->
-    <section class="w-full bg-white py-16 px-6 lg:px-16">
+    <!-- Tabs -->
+    <div class="w-full">
+      <!-- Tab headers -->
+      <div class="flex border-b border-gray-200 bg-white px-6 lg:px-16">
+        <button
+          @click="activeTab = 'services'"
+          :class="[
+            'px-6 py-4 text-sm font-bold tracking-wide transition-colors border-b-2 -mb-px',
+            activeTab === 'services'
+              ? 'border-[#4a7c2f] text-[#4a7c2f]'
+              : 'border-transparent text-gray-500 hover:text-gray-800'
+          ]"
+        >
+          Services
+        </button>
+        <button
+          @click="activeTab = 'products'"
+          :class="[
+            'px-6 py-4 text-sm font-bold tracking-wide transition-colors border-b-2 -mb-px',
+            activeTab === 'products'
+              ? 'border-[#4a7c2f] text-[#4a7c2f]'
+              : 'border-transparent text-gray-500 hover:text-gray-800'
+          ]"
+        >
+          Products
+        </button>
+      </div>
+
+      <!-- Tab: Services section -->
+      <section v-show="activeTab === 'services'" class="w-full bg-white py-16 px-6 lg:px-16">
       <div class="max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-12">
         <div class="flex-1 max-w-lg">
           <h2 class="text-3xl lg:text-4xl font-extrabold text-gray-900 leading-tight mb-5">
@@ -67,8 +95,8 @@
       </div>
     </section>
 
-    <!-- Product Catalog -->
-    <section class="w-full bg-gray-50 py-10">
+      <!-- Tab: Product Catalog -->
+      <section v-show="activeTab === 'products'" class="w-full bg-gray-50 py-10">
       <div class="max-w-7xl mx-auto px-6 lg:px-8 flex flex-col lg:flex-row gap-8 items-start">
 
         <!-- Sidebar filters -->
@@ -275,7 +303,9 @@
 
         </div>
       </div>
-    </section>
+      </section>
+
+    </div><!-- end tabs -->
 
     <QuotationModal v-model="showModal" :partNumber="selectedPartNumber" />
   </div>
@@ -294,6 +324,7 @@ const route = useRoute()
 const router = useRouter()
 const showModal = ref(false)
 const selectedPartNumber = ref('')
+const activeTab = ref('services')
 
 const openQuotation = (product) => {
   selectedPartNumber.value = product.name

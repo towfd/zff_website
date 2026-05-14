@@ -203,12 +203,20 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { allProducts } from '@/data/products'
 
 const router = useRouter()
 const menuOpen      = ref(false)
+
+watch(menuOpen, (val) => {
+  document.body.style.overflow = val ? 'hidden' : ''
+})
+
+onUnmounted(() => {
+  document.body.style.overflow = ''
+})
 const searchOpen    = ref(false)
 const searchQuery   = ref('')
 const showSuggestions = ref(false)

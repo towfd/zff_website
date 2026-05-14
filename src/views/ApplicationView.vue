@@ -98,10 +98,88 @@
         <!-- Content -->
         <div class="max-w-4xl mx-auto px-6 sm:px-8 py-10">
 
-          <!-- Image -->
-          <div class="w-full overflow-hidden rounded-sm mb-10">
-            <img :src="activeApp.img" :alt="activeApp.title" class="w-full aspect-video object-cover" />
+          <!-- Interactive Diagram -->
+          <div class="w-full mb-6">
+            <div class="flex items-center gap-2 mb-3">
+              <span class="w-2 h-2 rounded-full bg-[#8dc63f] animate-pulse"></span>
+              <p class="text-xs font-bold text-gray-400 uppercase tracking-widest">Interactive Diagram — select a component</p>
+            </div>
+            <div class="relative w-full select-none rounded-lg overflow-hidden shadow-lg border border-gray-100">
+              <img :src="appImg" :alt="activeApp.title" class="w-full" />
+              <!-- Hotspot pins -->
+              <button
+                v-for="spot in activeApp.hotspots"
+                :key="spot.id"
+                @click="activeHotspot = activeHotspot === spot.id ? null : spot.id"
+                :style="{ left: spot.cx + '%', top: spot.cy + '%' }"
+                class="absolute -translate-x-1/2 -translate-y-1/2 group z-10"
+              >
+                <!-- Pulse ring -->
+                <span v-if="activeHotspot !== spot.id" class="absolute inset-0 w-5 h-5 rounded-full bg-[#8dc63f]/50 animate-ping"></span>
+                <!-- Dot -->
+                <span :class="[
+                  'relative flex items-center justify-center w-5 h-5 rounded-full border-2 transition-all duration-200 shadow-lg',
+                  activeHotspot === spot.id
+                    ? 'bg-[#4a7c2f] border-white scale-125'
+                    : 'bg-white border-[#4a7c2f] group-hover:bg-[#4a7c2f] group-hover:scale-110'
+                ]">
+                  <span :class="['w-2 h-2 rounded-full transition-colors duration-200', activeHotspot === spot.id ? 'bg-white' : 'bg-[#4a7c2f] group-hover:bg-white']"></span>
+                </span>
+                <!-- Tooltip -->
+                <span class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2.5 whitespace-nowrap bg-gray-900 text-white text-[10px] font-bold px-2.5 py-1.5 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-150 pointer-events-none shadow-xl">
+                  {{ spot.label }}
+                  <span class="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-900"></span>
+                </span>
+              </button>
+            </div>
           </div>
+
+          <!-- Hotspot Product Panel -->
+          <Transition name="fade">
+            <div v-if="activeHotspot && activeApp.hotspots" class="mb-8">
+              <template v-for="spot in activeApp.hotspots" :key="spot.id">
+                <div v-if="activeHotspot === spot.id" class="rounded-lg overflow-hidden border border-[#8dc63f]/30 shadow-sm">
+                  <!-- Panel header -->
+                  <div class="bg-[#2d5016] px-5 py-4 flex items-start justify-between gap-4">
+                    <div>
+                      <p class="text-[#8dc63f] text-xs font-bold uppercase tracking-widest mb-1">{{ spot.label }}</p>
+                      <p class="text-white/80 text-sm leading-relaxed">{{ spot.desc }}</p>
+                    </div>
+                    <button @click="activeHotspot = null" class="flex-shrink-0 w-7 h-7 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors mt-0.5">
+                      <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+                  <!-- Products -->
+                  <div class="bg-[#f8fdf2] px-5 py-4">
+                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">Recommended Products</p>
+                    <div class="flex gap-3 overflow-x-auto pb-1">
+                      <RouterLink
+                        v-for="p in spot.products" :key="p.name"
+                        :to="p.to"
+                        class="group flex-shrink-0 w-44 border border-gray-200 bg-white rounded-lg hover:border-[#8dc63f] hover:shadow-md transition-all duration-150 flex flex-col overflow-hidden"
+                        @click="closeModal"
+                      >
+                        <div class="aspect-[4/3] bg-gray-50 overflow-hidden">
+                          <img :src="p.img" :alt="p.name" class="w-full h-full object-contain p-3 group-hover:scale-105 transition-transform duration-200" />
+                        </div>
+                        <div class="p-3 border-t border-gray-100">
+                          <span class="text-[10px] font-bold text-[#8dc63f] uppercase tracking-wide">{{ p.category }}</span>
+                          <p class="text-xs font-bold text-gray-900 mt-0.5 leading-snug group-hover:text-[#2d5016]">{{ p.name }}</p>
+                          <p class="text-[11px] text-gray-400 mt-0.5">{{ p.spec }}</p>
+                          <span class="text-[10px] text-[#8dc63f] font-semibold flex items-center gap-1 mt-2">
+                            View
+                            <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                          </span>
+                        </div>
+                      </RouterLink>
+                    </div>
+                  </div>
+                </div>
+              </template>
+            </div>
+          </Transition>
 
           <!-- Description -->
           <div class="space-y-5 text-base text-gray-600 leading-relaxed">
@@ -109,41 +187,13 @@
           </div>
 
           <!-- Key Requirements -->
-          <div class="mt-8 bg-gray-50 rounded-sm p-6">
+          <div class="mt-8 bg-gray-50 rounded-lg p-6">
             <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Key Requirements</p>
             <ul class="grid grid-cols-2 sm:grid-cols-3 gap-3">
               <li v-for="req in activeApp.requirements" :key="req" class="flex items-center gap-2 text-sm text-gray-700">
                 <span class="w-1.5 h-1.5 rounded-full bg-[#8dc63f] flex-shrink-0" />{{ req }}
               </li>
             </ul>
-          </div>
-
-          <!-- Recommended Products -->
-          <div class="mt-10 pt-8 border-t border-gray-100">
-            <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-5">Recommended Products</p>
-            <div class="flex gap-4 overflow-x-auto pb-3 -mx-1 px-1" style="scroll-snap-type: x mandatory;">
-              <RouterLink
-                v-for="p in activeApp.relatedProducts" :key="p.name"
-                :to="p.to"
-                class="group flex-shrink-0 w-[calc(33.333%-11px)] min-w-[220px] border border-gray-200 rounded-sm hover:border-[#8dc63f] hover:shadow-lg transition-all duration-150 flex flex-col overflow-hidden"
-                style="scroll-snap-align: start;"
-                @click="closeModal"
-              >
-                <div class="aspect-[4/3] bg-gray-50 overflow-hidden">
-                  <img :src="p.img" :alt="p.name" class="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-200" />
-                </div>
-                <div class="p-4 flex flex-col gap-1 flex-1">
-                  <span class="text-[10px] font-bold text-[#8dc63f] uppercase tracking-wide">{{ p.category }}</span>
-                  <p class="text-sm font-bold text-gray-900 group-hover:text-[#2d5016] leading-snug">{{ p.name }}</p>
-                  <p class="text-xs text-gray-500 mt-0.5">{{ p.spec }}</p>
-                  <p class="text-xs text-gray-400 mt-1 line-clamp-2">{{ p.desc }}</p>
-                  <span class="text-xs text-[#8dc63f] font-semibold flex items-center gap-1 mt-auto pt-3">
-                    View Product
-                    <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
-                  </span>
-                </div>
-              </RouterLink>
-            </div>
           </div>
         </div>
       </div>
@@ -152,16 +202,19 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onUnmounted } from 'vue'
 import app1          from '@/assets/index/application1.png'
 import app2          from '@/assets/index/application2.png'
 import app3          from '@/assets/index/application3.png'
 import app4          from '@/assets/index/application4.png'
+import appImg        from '@/assets/application/applications.png'
 import componentImg  from '@/assets/product/component.png'
 
-const activeApp  = ref(null)
-const openModal  = (app) => { activeApp.value = app; document.body.style.overflow = 'hidden' }
-const closeModal = ()    => { activeApp.value = null;  document.body.style.overflow = '' }
+const activeApp      = ref(null)
+const activeHotspot  = ref(null)
+const openModal  = (app) => { activeApp.value = app; activeHotspot.value = null; document.body.style.overflow = 'hidden' }
+const closeModal = ()    => { activeApp.value = null; activeHotspot.value = null; document.body.style.overflow = '' }
+onUnmounted(() => { document.body.style.overflow = '' })
 
 const products = {
   igbt75_1200:   { name: 'EG75W3LT-120H',  category: 'IGBT Module',       spec: '75A / 1200V',  desc: 'Half-bridge IGBT module for industrial inverter and motor drive applications.',          img: componentImg, to: '/product/3'  },
@@ -185,7 +238,13 @@ const applications = [
       'MacMic\'s IGBT and SiC MOSFET module range offers optimised solutions for low-voltage drives (up to 690V AC) and medium-voltage systems up to 3.3kV, covering power levels from a few kilowatts up to several megawatts.',
     ],
     requirements: ['High switching frequency', 'Short-circuit robustness', 'Low VCE(sat)', 'Wide operating temperature', 'High power density', 'Long service life'],
-    relatedProducts: [products.igbt75_1200, products.igbt150_1200, products.igbt100_1700],
+    hotspots: [
+      { id: 'rectifier',  label: 'Rectifier (AC/DC)',        cx: 28, cy: 41, desc: 'Converts AC grid input to DC. Demands low forward voltage drop and high surge current capability.',            products: [products.rect25_650, products.igbt75_1200, products.igbt150_1200] },
+      { id: 'inverter',   label: 'Inverter (DC/AC)',          cx: 65, cy: 41, desc: 'Core power stage converting DC bus to variable-frequency AC. Uses IGBT modules for high-speed switching.',    products: [products.igbt75_1200, products.igbt150_1200, products.igbt100_1700] },
+      { id: 'bypass',     label: 'Bypass Switch',             cx: 47, cy: 13, desc: 'Automatic / maintenance bypass path. Switching devices must handle full load current reliably.',               products: [products.igbt50_1200, products.igbt75_1200, products.sic50_650] },
+      { id: 'spd',        label: 'Surge Protective Device',   cx: 47, cy: 72, desc: 'Clamps transient overvoltages from the AC grid. Works in tandem with front-end rectifier modules.',           products: [products.rect25_650, products.sic50_650, products.igbt50_1200] },
+      { id: 'dc-source',  label: 'Input DC Source',           cx: 15, cy: 72, desc: 'Battery bank or solar array feeding DC directly to the bus. SiC MOSFETs excel in bidirectional DC/DC stages.', products: [products.sic50_650, products.sic100_1200, products.igbt200_1200] },
+    ],
   },
   {
     id: 'ups', title: 'UPS',
@@ -197,7 +256,13 @@ const applications = [
       'MacMic\'s rectifier modules and IGBT modules are deployed in UPS systems from a few kVA to several MVA, providing the performance and reliability that mission-critical applications demand.',
     ],
     requirements: ['High reliability', 'Low switching losses', 'Fast recovery diode', 'Wide input voltage range', 'Efficiency > 96%', 'Compact footprint'],
-    relatedProducts: [products.igbt75_1200, products.rect25_650, products.igbt150_1200],
+    hotspots: [
+      { id: 'rectifier',  label: 'Rectifier (AC/DC)',      cx: 28, cy: 41, desc: 'PFC front-end rectifier converting grid AC to regulated DC bus. Critical for high input power factor.',           products: [products.rect25_650, products.igbt75_1200, products.igbt150_1200] },
+      { id: 'inverter',   label: 'Inverter (DC/AC)',        cx: 65, cy: 41, desc: 'Regenerates clean AC output from DC bus. Must maintain low THD and fast transient response under load steps.',   products: [products.igbt75_1200, products.igbt150_1200, products.igbt200_1200] },
+      { id: 'bypass',     label: 'Static Bypass',           cx: 47, cy: 13, desc: 'Transfers load to grid instantly on inverter fault. Uses fast-switching thyristors or IGBT pairs.',              products: [products.igbt50_1200, products.igbt75_1200, products.sic50_650] },
+      { id: 'battery',    label: 'Battery Bank',            cx: 47, cy: 72, desc: 'Energy storage providing ride-through during outages. Bidirectional DC/DC converters manage charge/discharge.',  products: [products.sic50_650, products.sic100_1200, products.igbt100_1700] },
+      { id: 'dc-link',    label: 'DC Link Capacitors',      cx: 15, cy: 72, desc: 'High-capacity DC bus filtering. Reduces ripple voltage seen by both rectifier and inverter stages.',              products: [products.igbt200_1200, products.igbt100_1700, products.rect25_650] },
+    ],
   },
   {
     id: 'welding-machine', title: 'Welding Machine',
@@ -209,7 +274,13 @@ const applications = [
       'MacMic\'s IGBT modules and discretes are proven in MIG, TIG, and plasma cutting applications, with robust construction and tight parameter matching ensuring consistent arc performance.',
     ],
     requirements: ['High peak current', 'Short-circuit withstand', 'Repetitive pulsed load', 'Fast switching', 'Robust packaging', 'Noise immunity'],
-    relatedProducts: [products.igbt50_1200, products.igbt75_1200, products.igbt150_1200],
+    hotspots: [
+      { id: 'rectifier',  label: 'Input Rectifier',         cx: 28, cy: 41, desc: 'Converts mains AC to DC for the main inverter stage. Bridge rectifier modules with high surge rating preferred.',  products: [products.rect25_650, products.igbt75_1200, products.igbt50_1200] },
+      { id: 'main-igbt',  label: 'Main IGBT Switch',        cx: 65, cy: 41, desc: 'Core switching element driving the welding transformer at 20–100kHz. Must survive short-circuit conditions.',     products: [products.igbt50_1200, products.igbt75_1200, products.igbt150_1200] },
+      { id: 'pfc',        label: 'PFC / Chopper',           cx: 47, cy: 13, desc: 'Active power factor correction or current chopper stage. SiC MOSFETs offer lower switching losses here.',        products: [products.sic50_650, products.sic100_1200, products.igbt75_1200] },
+      { id: 'output',     label: 'Output Stage',            cx: 47, cy: 72, desc: 'Secondary-side rectifier delivering high DC current to the welding arc. Low V_F diodes are essential.',          products: [products.rect25_650, products.igbt100_1700, products.igbt150_1200] },
+      { id: 'driver',     label: 'Gate Driver / Control',   cx: 15, cy: 72, desc: 'Drives IGBT gates with precise timing. Low-side and high-side drivers protect against shoot-through.',           products: [products.sic50_650, products.igbt50_1200, products.rect25_650] },
+    ],
   },
   {
     id: 'induction-heating', title: 'Induction Heating',
@@ -221,55 +292,13 @@ const applications = [
       'MacMic\'s high-frequency IGBT modules are engineered for induction heating, offering the switching speed and thermal performance needed for continuous-duty operation at elevated frequencies.',
     ],
     requirements: ['High-frequency operation', 'Low switching losses', 'Resonant topology support', 'High dv/dt capability', 'Continuous duty rating', 'Tight Vge(th) matching'],
-    relatedProducts: [products.igbt50_1200, products.igbt75_1200, products.igbt100_1700],
-  },
-  {
-    id: 'power-supply', title: 'Power Supply / Power Source',
-    desc: 'Efficient conversion and tight voltage regulation for industrial and commercial power supplies.',
-    img: app1,
-    body: [
-      'Switched-mode power supplies (SMPS) are the backbone of modern electronics, converting AC mains voltage to regulated DC for industrial equipment, telecommunications, and servers. High efficiency, power density, and reliability are the primary design drivers.',
-      'The front-end rectifier stage uses a bridge rectifier module followed by a PFC boost converter, while the isolated DC-DC stage uses a half-bridge or full-bridge IGBT topology. SiC MOSFETs are increasingly adopted to push efficiency above 97%.',
-      'MacMic\'s rectifier and FRED modules are standard choices for the AC/DC front end, while IGBT and SiC MOSFET modules serve the high-frequency isolation stage.',
+    hotspots: [
+      { id: 'rectifier',  label: 'Input Rectifier',         cx: 28, cy: 41, desc: 'AC/DC front end supplying the DC bus. Three-phase bridge with high surge current rating for start-up.',         products: [products.rect25_650, products.igbt75_1200, products.igbt50_1200] },
+      { id: 'resonant',   label: 'Resonant Inverter',       cx: 65, cy: 41, desc: 'Full/half-bridge IGBT topology driving the resonant LC tank at kHz–MHz range. Key to heating efficiency.',      products: [products.igbt50_1200, products.igbt75_1200, products.sic50_650] },
+      { id: 'gate',       label: 'Gate Driver',             cx: 47, cy: 13, desc: 'Provides isolated, high-speed gate signals. Tight dead-time control prevents cross-conduction at high frequency.', products: [products.sic50_650, products.sic100_1200, products.igbt50_1200] },
+      { id: 'tank',       label: 'Resonant Tank (LC)',      cx: 47, cy: 72, desc: 'Inductor-capacitor network defining operating frequency and power delivery to the heating coil.',               products: [products.igbt100_1700, products.igbt150_1200, products.igbt75_1200] },
+      { id: 'pfc',        label: 'Power Factor Correction', cx: 15, cy: 72, desc: 'Boost PFC stage ensuring unity power factor at the grid interface. SiC MOSFETs enable higher switching freq.',  products: [products.sic50_650, products.sic100_1200, products.rect25_650] },
     ],
-    requirements: ['High efficiency > 95%', 'Wide input voltage range', 'Low EMI', 'High power factor', 'Fast transient response', 'Compact design'],
-    relatedProducts: [products.rect25_650, products.igbt75_1200, products.sic50_650],
-  },
-  {
-    id: 'bms', title: 'Battery Management System',
-    desc: 'Precise current control and protection features for safe and efficient battery management.',
-    img: app2,
-    body: [
-      'Battery Management Systems (BMS) monitor, protect, and control rechargeable battery packs in electric vehicles, energy storage systems, and portable devices. Power semiconductors play a critical role in cell balancing and protection.',
-      'Bidirectional DC/DC converters within the BMS use MOSFETs or IGBTs to control charge and discharge currents with high precision. Devices must offer very low on-state resistance, fast switching, and high avalanche energy rating.',
-      'MacMic\'s IGBT discretes are selected for BMS designs for their tight parameter tolerances, low RDS(on), and reliable performance over wide temperature ranges.',
-    ],
-    requirements: ['Low on-state resistance', 'Bidirectional operation', 'High avalanche energy', 'Wide temperature range', 'Accurate current sensing', 'Fast protection response'],
-    relatedProducts: [products.sic50_650, products.igbt50_1200, products.sic100_1200],
-  },
-  {
-    id: 'ev-motor-drive', title: 'EV Motor Drive',
-    desc: 'High-power density and thermal efficiency for electric vehicle traction systems.',
-    img: app3,
-    body: [
-      'Electric vehicle traction inverters deliver peak powers of 100–300kW from a compact, lightweight package while achieving system efficiencies above 97%, in a harsh automotive environment subject to vibration, moisture, and extreme temperatures.',
-      'SiC MOSFET technology has become the preferred choice for new EV traction inverter designs, offering significant improvements in switching loss and thermal performance vs. silicon IGBTs — directly translating to longer driving range.',
-      'MacMic\'s SiC MOSFET module series is optimised for EV traction, featuring automotive-grade packaging, integrated NTC thermistors, and data that supports functional safety analysis.',
-    ],
-    requirements: ['AEC-Q101 qualified', 'High power density', 'Low inductance package', 'Wide bandgap (SiC)', 'Functional safety support', 'Active thermal management'],
-    relatedProducts: [products.sic100_1200, products.sic50_650, products.igbt200_1200],
-  },
-  {
-    id: 'ev-charging', title: 'EV Charging Station',
-    desc: 'Reliable AC/DC conversion for fast and safe EV charging infrastructure.',
-    img: app4,
-    body: [
-      'EV charging stations — from AC wallboxes to high-power DC fast chargers — rely on power electronics to convert grid AC into regulated DC. DC fast chargers (50kW to 350kW) use an AC/DC rectifier stage followed by a DC/DC converter.',
-      'The power semiconductors must handle high continuous currents and withstand grid voltage transients. The AC/DC front end typically uses a PFC boost rectifier, while the DC/DC isolation stage uses a phase-shifted full-bridge or LLC resonant converter.',
-      'MacMic\'s SiC MOSFET and IGBT modules are deployed in commercial fast chargers worldwide, providing the efficiency and reliability required for 24/7 public charging operation.',
-    ],
-    requirements: ['High continuous current', 'Grid transient robustness', 'High efficiency AC/DC', 'Galvanic isolation', '24/7 duty cycle', 'Wide output voltage range'],
-    relatedProducts: [products.sic100_1200, products.rect25_650, products.igbt150_1200],
   },
 ]
 
@@ -283,4 +312,10 @@ const productTypes = [
 <style scoped>
 .modal-enter-active, .modal-leave-active { transition: opacity 0.18s ease; }
 .modal-enter-from, .modal-leave-to { opacity: 0; }
+.fade-enter-active, .fade-leave-active { transition: opacity 0.2s ease, transform 0.2s ease; }
+.fade-enter-from, .fade-leave-to { opacity: 0; transform: translateY(-8px); }
+@keyframes ping { 75%, 100% { transform: scale(2); opacity: 0; } }
+.animate-ping { animation: ping 1.5s cubic-bezier(0,0,0.2,1) infinite; }
+.animate-pulse { animation: pulse 2s cubic-bezier(0.4,0,0.6,1) infinite; }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 </style>

@@ -45,10 +45,19 @@
 </template>
 
 <script setup>
+import { watch, onUnmounted } from 'vue'
 import QuotationForm from './QuotationForm.vue'
 
-defineProps({ modelValue: Boolean, partNumber: { type: String, default: '' } })
+const props = defineProps({ modelValue: Boolean, partNumber: { type: String, default: '' } })
 const emit = defineEmits(['update:modelValue'])
+
+watch(() => props.modelValue, (val) => {
+  document.body.style.overflow = val ? 'hidden' : ''
+})
+
+onUnmounted(() => {
+  document.body.style.overflow = ''
+})
 
 const onSubmitted = (data) => {
   console.log('Quotation submitted:', data)
