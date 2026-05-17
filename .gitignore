@@ -12,6 +12,11 @@ dist
 dist-ssr
 *.local
 
+.env
+
+# Session logs
+log/
+
 # Claude Code
 .claude
 

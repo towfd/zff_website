@@ -38,10 +38,9 @@
       <div>
         <h4 class="text-base font-semibold mb-6">Pages</h4>
         <ul class="flex flex-col gap-4">
-          <li v-for="item in pages" :key="item.to">
-            <RouterLink :to="item.to" class="text-gray-400 hover:text-white text-sm transition-colors">
-              {{ item.label }}
-            </RouterLink>
+          <li v-for="item in pages" :key="item.label">
+            <RouterLink v-if="item.to" :to="item.to" class="text-gray-400 hover:text-white text-sm transition-colors">{{ item.label }}</RouterLink>
+            <span v-else class="text-gray-600 text-sm cursor-not-allowed">{{ item.label }}</span>
           </li>
         </ul>
       </div>
@@ -50,10 +49,9 @@
       <div>
         <h4 class="text-base font-semibold mb-6">Utility</h4>
         <ul class="flex flex-col gap-4">
-          <li v-for="item in utility" :key="item.to">
-            <RouterLink :to="item.to" class="text-gray-400 hover:text-white text-sm transition-colors">
-              {{ item.label }}
-            </RouterLink>
+          <li v-for="item in utility" :key="item.label">
+            <RouterLink v-if="item.to" :to="item.to" class="text-gray-400 hover:text-white text-sm transition-colors">{{ item.label }}</RouterLink>
+            <span v-else class="text-gray-600 text-sm cursor-not-allowed">{{ item.label }}</span>
           </li>
         </ul>
       </div>
@@ -114,17 +112,17 @@ const email = ref('')
 const pages = [
   { label: 'About Us', to: '/about' },
   { label: 'Product', to: '/product' },
-  { label: 'Download Center', to: '/download' },
+  { label: 'Download Center', to: null },
   { label: 'News', to: '/news' },
   { label: 'Contact', to: '/contact' },
 ]
 
 const utility = [
-  { label: 'Quotation', to: '/quotation' },
-  { label: 'Service', to: '/service' },
-  { label: 'Privacy', to: '/privacy' },
-  { label: 'FaQ', to: '/faq' },
-  { label: 'Sales Team', to: '/sales' },
+  { label: 'Quotation', to: null },
+  { label: 'Service', to: null },
+  { label: 'Privacy', to: null },
+  { label: 'FaQ', to: null },
+  { label: 'Sales Team', to: null },
 ]
 
 const bottomLinks = ['Style Guide', 'Licenses', 'Changelog', 'Password']
